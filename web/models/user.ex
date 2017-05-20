@@ -50,4 +50,21 @@ defmodule Logitpho.User do
         struct
     end
   end
+
+  def authenticate(email, password) do
+    import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
+    alias Logitpho.User
+    alias Logitpho.Repo
+
+    user = Repo.get_by(User, email: email)
+
+    cond do
+      user && checkpw(password, user.password_hash) ->
+        {:ok, user}
+      user ->
+        {:error, "Incorrect Password"}
+      true ->
+        {:error, "User not found"}
+    end
+  end
 end

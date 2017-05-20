@@ -18,6 +18,10 @@ defmodule Logitpho.Router do
 
     get "/", PageController, :index
     resources "/users", UserController, only: [:index, :new, :create, :show, :edit, :update ]
+
+    get "/login", AuthenticationController, :login
+    post "/login", AuthenticationController,  :authenticate
+    delete "/logout", AuthenticationController,  :logout
   end
 
   # Other scopes may use custom stacks.
