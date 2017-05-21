@@ -16,23 +16,23 @@ defmodule Logitpho.Router do
   pipeline :browser_auth do
     plug Guardian.Plug.VerifySession
     plug Guardian.Plug.LoadResource
+    plug Guardian.Plug.EnsureAuthenticated, handler: Logitpho.AuthorizationController
     plug Logitpho.Plugs.Context
   end
 
   scope "/", Logitpho do
     pipe_through :browser
 
+    get "/", PageController, :index
     get "/login", AuthenticationController, :login
     post "/login", AuthenticationController,  :authenticate
+    resources "/users", UserController, only: [:new, :create]
   end
 
   scope "/", Logitpho do
     pipe_through [:browser, :browser_auth]
 
-    get "/", PageController, :index
-
-    get "/logged_in_page", AuthorizationController, :logged_in_page
-    resources "/users", UserController, only: [:index, :new, :create, :show, :edit, :update ]
+    resources "/users", UserController, only: [:index, :show, :edit, :update ]
     delete "/logout", AuthenticationController,  :logout
   end
 
