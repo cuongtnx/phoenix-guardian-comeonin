@@ -13,14 +13,26 @@ defmodule Logitpho.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", Logitpho do
-    pipe_through :browser # Use the default browser stack
+  pipeline :browser_auth do
+    plug Guardian.Plug.VerifySession
+    plug Guardian.Plug.LoadResource
+    plug Logitpho.Plugs.Context
+  end
 
-    get "/", PageController, :index
-    resources "/users", UserController, only: [:index, :new, :create, :show, :edit, :update ]
+  scope "/", Logitpho do
+    pipe_through :browser
 
     get "/login", AuthenticationController, :login
     post "/login", AuthenticationController,  :authenticate
+  end
+
+  scope "/", Logitpho do
+    pipe_through [:browser, :browser_auth]
+
+    get "/", PageController, :index
+
+    get "/logged_in_page", AuthorizationController, :logged_in_page
+    resources "/users", UserController, only: [:index, :new, :create, :show, :edit, :update ]
     delete "/logout", AuthenticationController,  :logout
   end
 

@@ -16,7 +16,11 @@
       <header class="header">
         <nav role="navigation">
           <ul class="nav nav-pills pull-right">
-            <%= link "Login", to: authentication_path(@conn, :login) %>
+            <%= if Map.has_key?(@conn.assigns, :current_user) and @conn.assigns.current_user != nil do %>
+              <%= link "Logout", to: authentication_path(@conn, :logout), method: "DELETE" %>
+            <% else %>
+              <%= link "Login", to: authentication_path(@conn, :login) %>
+            <% end %>
           </ul>
         </nav>
         <span class="logo"></span>
